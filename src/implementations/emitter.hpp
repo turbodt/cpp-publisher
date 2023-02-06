@@ -77,6 +77,7 @@ template <typename T> EmitterConcrete<T>::~EmitterConcrete() {
   if (this->on_destroy != nullptr) {
     this->on_destroy(this);
   }
+  this->unsubscribe_all();
 };
 
 template <typename T>
