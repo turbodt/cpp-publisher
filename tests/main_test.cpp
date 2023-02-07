@@ -2,9 +2,11 @@
 #include "gtest/gtest.h"
 #include <iostream>
 
+using namespace cpp_publisher;
+
 TEST(publisher_concrete, segregate_into_emitter_and_source) {
   bool b = false;
-  auto publisher = cpp_publisher::PublisherConcrete<bool>();
+  auto publisher = PublisherConcrete<bool>();
   auto source_ptr = publisher.as_source();
   auto emitter_ptr = publisher.as_emitter();
   auto subscription =
@@ -16,7 +18,7 @@ TEST(publisher_concrete, segregate_into_emitter_and_source) {
 
 TEST(publisher_concrete, emit_and_subsribe) {
   bool b = false;
-  auto publisher = cpp_publisher::PublisherConcrete<bool>();
+  auto publisher = PublisherConcrete<bool>();
   publisher.subscribe([&b](bool const &value) { b = value; });
   EXPECT_EQ(false, b);
   publisher.publish(true);
@@ -25,13 +27,13 @@ TEST(publisher_concrete, emit_and_subsribe) {
 
 TEST(emitter_concrete, constructor) {
   bool b = false;
-  auto emitter = cpp_publisher::EmitterConcrete<bool>();
+  auto emitter = EmitterConcrete<bool>();
   EXPECT_EQ(true, true);
 }
 
 TEST(subscription_concrete, constructor) {
   bool b = false;
-  auto subscription = cpp_publisher::SubscriptionConcrete<bool>(nullptr);
+  auto subscription = SubscriptionConcrete<bool>(nullptr);
   EXPECT_EQ(true, true);
 }
 
