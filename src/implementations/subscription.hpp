@@ -2,7 +2,7 @@
 #define H_CPP_PUBLISHER_MODULE_IMPLEMENTATIONS_SUBSCRIPTION
 
 #include "../interfaces/main.hpp"
-#include "../utils/instance-counter.hpp"
+#include "../utils/main.hpp"
 
 namespace cpp_publisher {
 
