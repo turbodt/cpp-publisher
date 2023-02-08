@@ -8,7 +8,8 @@
 namespace cpp_publisher {
 
 template <typename T>
-class PublisherConcrete : public EmitterConcrete<T>, public Publisher<T> {
+class PublisherConcrete : public EmitterConcrete<T>,
+                          virtual public Publisher<T> {
   using EmitterConcrete<T>::EmitterConcrete;
   using EmitterConcrete<T>::subscribe;
 

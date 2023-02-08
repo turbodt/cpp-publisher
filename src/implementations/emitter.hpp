@@ -9,7 +9,7 @@
 
 namespace cpp_publisher {
 
-template <typename T> class EmitterConcrete : public Emitter<T> {
+template <typename T> class EmitterConcrete : virtual public Emitter<T> {
   friend class SubscriptionConcrete<T>;
 
 public:

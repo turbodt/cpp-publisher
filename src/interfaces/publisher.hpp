@@ -3,11 +3,10 @@
 
 #include "./emitter.hpp"
 #include "./source.hpp"
-#include <memory>
 
 namespace cpp_publisher {
 
-template <typename T> class Publisher : Emitter<T>, Source<T> {
+template <typename T> class Publisher : virtual public Emitter<T>, virtual public Source<T> {
   virtual Emitter<T> *as_emitter() = 0;
   virtual Source<T> *as_source() = 0;
 };
