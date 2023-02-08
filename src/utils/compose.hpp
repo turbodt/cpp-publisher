@@ -13,8 +13,9 @@ template <typename F0, typename... F> class Composer {
 
 public:
   Composer(F0 f0, F... f) : f0_(f0), tail_(f...) {}
-  template <typename T> T operator()(const T &x) const { return f0_(tail_(x)); }
+  template <typename T> T operator()(const T &x) const { return tail_(f0_(x)); }
 };
+
 template <typename F> class Composer<F> {
   F f_;
 
@@ -22,6 +23,7 @@ public:
   Composer(F f) : f_(f) {}
   template <typename T> T operator()(const T &x) const { return f_(x); }
 };
+
 template <typename... F> Composer<F...> compose(F... f) {
   return Composer<F...>(f...);
 };
