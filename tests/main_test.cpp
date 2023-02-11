@@ -1,22 +1,37 @@
 #include "cpp-publisher.hpp"
 #include "gtest/gtest.h"
 #include <iostream>
+#include <memory>
 
 using namespace cpp_publisher;
+
+TEST(emitter_map_operator, three_iterations) {
+  int tested_value = 0;
+  auto publisher_unique_ptr = std::make_unique<PublisherConcrete<int>>();
+  auto emitter_ptr = publisher_unique_ptr->as_emitter();
+  auto mapping = utils::compose<std::unique_ptr<Emitter<int>>>(
+      operators::MapEmitterOperator<int, int>([](auto x) { return x * x; }),
+      operators::MapEmitterOperator<int, int>([](auto x) { return x + 1; }),
+      operators::MapEmitterOperator<int, int>([](auto x) { return 2 * x; }));
+  std::unique_ptr<Emitter<int>> emitter1_unique_ptr = mapping(emitter_ptr);
+  auto subscription = emitter1_unique_ptr->subscribe(
+      [&tested_value](auto value) { tested_value = value; });
+  EXPECT_EQ(0, tested_value);
+  publisher_unique_ptr->publish(3);
+  EXPECT_EQ(20, tested_value);
+  publisher_unique_ptr->publish(6);
+  EXPECT_EQ(74, tested_value);
+}
 
 TEST(emitter_map_operator, one_iteration) {
   bool b = false;
   auto publisher_unique_ptr = std::make_unique<PublisherConcrete<int>>();
   auto emitter_ptr = publisher_unique_ptr->as_emitter();
   auto map1 = operators::MapEmitterOperator<int, bool>(
-      [](auto x) {
-        return (x % 2) == 0;
-  });
+      [](auto x) { return (x % 2) == 0; });
   auto emitter1_unique_ptr = map1(emitter_ptr);
   auto subscription =
-      emitter1_unique_ptr->subscribe([&b](bool const &value) {
-    b = value;
-  });
+      emitter1_unique_ptr->subscribe([&b](bool const &value) { b = value; });
   EXPECT_EQ(false, b);
   publisher_unique_ptr->publish(42);
   EXPECT_EQ(true, b);

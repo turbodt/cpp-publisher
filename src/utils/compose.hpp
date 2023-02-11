@@ -7,25 +7,25 @@
 namespace cpp_publisher {
 namespace utils {
 
-template <typename F0, typename... F> class Composer {
-  F0 f0_;
-  Composer<F...> tail_;
+template <typename Ret, typename F, typename... Tail> class Composer {
+  F f;
+  Composer<Ret, Tail...> tail;
 
 public:
-  Composer(F0 f0, F... f) : f0_(f0), tail_(f...) {}
-  template <typename T> T operator()(const T &x) const { return tail_(f0_(x)); }
+  Composer(F f, Tail... tail) : f(f), tail(tail...) {}
+  template <typename Arg> Ret operator()(Arg x) { return this->tail(this->f(x)); }
 };
 
-template <typename F> class Composer<F> {
-  F f_;
+template <typename Ret, typename F> class Composer<Ret, F> {
+  F f;
 
 public:
-  Composer(F f) : f_(f) {}
-  template <typename T> T operator()(const T &x) const { return f_(x); }
+  Composer(F f) : f(f) {}
+  template <typename Arg> Ret operator()(Arg x) { return this->f(x); }
 };
 
-template <typename... F> Composer<F...> compose(F... f) {
-  return Composer<F...>(f...);
+template <typename Ret, typename... Tail> Composer<Ret, Tail...> compose(Tail... tail) {
+  return Composer<Ret, Tail...>(tail...);
 };
 
 } // namespace utils

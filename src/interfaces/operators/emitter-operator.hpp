@@ -12,13 +12,14 @@ public:
   typedef std::unique_ptr<Emitter<To>> ReturnType;
 
 protected:
-  virtual ReturnType operate(Emitter<From> &) = 0;
+  virtual ReturnType operate(Emitter<From> *) = 0;
+  virtual ReturnType operate(std::unique_ptr<Emitter<From>> &) = 0;
 
 public:
-  virtual ReturnType operator()(Emitter<From> &);
-  virtual ReturnType operator()(Emitter<From> *);
-  virtual ReturnType operator()(std::shared_ptr<Emitter<From>>);
-  virtual ReturnType operator()(std::unique_ptr<Emitter<From>>);
+  ReturnType operator()(Emitter<From> &);
+  ReturnType operator()(Emitter<From> *);
+  ReturnType operator()(std::shared_ptr<Emitter<From>> &);
+  ReturnType operator()(std::unique_ptr<Emitter<From>> &);
 };
 
 } // namespace operators
@@ -30,27 +31,27 @@ namespace operators {
 template <typename From, typename To>
 typename EmitterOperator<From, To>::ReturnType
 EmitterOperator<From, To>::operator()(Emitter<From> &emitter) {
-  return this->operate(emitter);
+  return this->operator()(&emitter);
 };
 
 template <typename From, typename To>
 typename EmitterOperator<From, To>::ReturnType
 EmitterOperator<From, To>::operator()(Emitter<From> *emitter_ptr) {
-  return this->operator()(*emitter_ptr);
+  return this->operate(emitter_ptr);
 };
 
 template <typename From, typename To>
 typename EmitterOperator<From, To>::ReturnType
 EmitterOperator<From, To>::operator()(
-    std::shared_ptr<Emitter<From>> emitter_ptr) {
+    std::shared_ptr<Emitter<From>> &emitter_ptr) {
   return this->operator()(emitter_ptr.get());
 };
 
 template <typename From, typename To>
 typename EmitterOperator<From, To>::ReturnType
 EmitterOperator<From, To>::operator()(
-    std::unique_ptr<Emitter<From>> emitter_ptr) {
-  return this->operator()(emitter_ptr.get());
+    std::unique_ptr<Emitter<From>> &emitter_ptr) {
+  return this->operate(emitter_ptr);
 };
 
 } // namespace operators
