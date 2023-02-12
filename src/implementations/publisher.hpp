@@ -14,6 +14,9 @@ class PublisherConcrete : public EmitterConcrete<T>,
   using EmitterConcrete<T>::subscribe;
 
 public:
+  typedef typename EmitterConcrete<T>::OnCreateCb OnCreateCb;
+  typedef typename EmitterConcrete<T>::OnDestroyCb OnDestroyCb;
+
   virtual void publish(T const &);
   virtual Subscription<T> *
   subscribe(typename Subscription<T>::OnPublishCb const & = nullptr,

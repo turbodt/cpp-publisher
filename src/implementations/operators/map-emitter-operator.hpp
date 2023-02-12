@@ -2,6 +2,7 @@
 #define H_CPP_PUBLISHER_MODULE_IMPLEMENTATIONS_MODULE_OPERATORS_MAP_EMITTER_OPERATOR
 
 #include "../../interfaces/main.hpp"
+#include "../publisher-factory.hpp"
 #include "../publisher.hpp"
 #include <functional>
 #include <memory>
@@ -55,8 +56,7 @@ template <typename From, typename To, typename MapArg>
 std::unique_ptr<Publisher<To>>
 MapEmitterOperator<From, To, MapArg>::make_to_unique_ptr(
     Emitter<From> *from_ptr) const {
-  // TODO: Change this for a factory
-  return std::make_unique<PublisherConcrete<To>>();
+  return make_publisher<To>();
 }
 
 template <typename From, typename To, typename MapArg>
@@ -65,8 +65,7 @@ MapEmitterOperator<From, To, MapArg>::make_to_unique_ptr(
     std::unique_ptr<Emitter<From>> &from_unique_ptr) const {
   auto from_ptr = from_unique_ptr.release();
   auto on_delete = [from_ptr](auto emitter_ptr) { delete from_ptr; };
-  // TODO: Change this for a factory
-  return std::make_unique<PublisherConcrete<To>>(nullptr, on_delete);
+  return make_publisher<To>(nullptr, on_delete);
 }
 
 template <typename From, typename To, typename MapArg>

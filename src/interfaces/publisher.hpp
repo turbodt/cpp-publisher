@@ -6,7 +6,9 @@
 
 namespace cpp_publisher {
 
-template <typename T> class Publisher : virtual public Emitter<T>, virtual public Source<T> {
+template <typename T>
+class Publisher : virtual public Emitter<T>, virtual public Source<T> {
+public:
   virtual Emitter<T> *as_emitter() = 0;
   virtual Source<T> *as_source() = 0;
 };

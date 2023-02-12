@@ -3,6 +3,7 @@
 
 #include "./emitter.hpp"
 #include "./operators/main.hpp"
+#include "./publisher-factory.hpp"
 #include "./publisher.hpp"
 #include "./subscription.hpp"
 
