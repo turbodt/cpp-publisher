@@ -5,6 +5,27 @@
 
 using namespace cpp_publisher;
 
+TEST(emitter_filter_operator, one_iteration_factory) {
+  int tested_value = 0;
+  auto publisher_unique_ptr = std::make_unique<PublisherConcrete<int>>();
+  auto emitter_ptr = publisher_unique_ptr->as_emitter();
+  auto mapping = operators::filter<int>([](auto x) { return x % 3 == 0; });
+  std::unique_ptr<Emitter<int>> emitter1_unique_ptr = mapping(emitter_ptr);
+  auto subscription = emitter1_unique_ptr->subscribe(
+      [&tested_value](auto value) { tested_value = value; });
+  EXPECT_EQ(0, tested_value);
+  publisher_unique_ptr->publish(3);
+  EXPECT_EQ(3, tested_value);
+  publisher_unique_ptr->publish(6);
+  EXPECT_EQ(6, tested_value);
+  publisher_unique_ptr->publish(5);
+  EXPECT_EQ(6, tested_value);
+  publisher_unique_ptr->publish(18);
+  EXPECT_EQ(18, tested_value);
+  publisher_unique_ptr->publish(2);
+  EXPECT_EQ(18, tested_value);
+}
+
 TEST(emitter_map_operator, three_iterations_factory) {
   int tested_value = 0;
   auto publisher_unique_ptr = std::make_unique<PublisherConcrete<int>>();
