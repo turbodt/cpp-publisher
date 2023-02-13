@@ -5,6 +5,18 @@
 
 using namespace cpp_publisher;
 
+TEST(behavior_factory, ensure_subscription_is_called_at_subscribing) {
+  int subscription_call_cnt = 0;
+  auto behavior = make_behavior<bool>(true);
+  auto source_ptr = behavior->as_source();
+  auto emitter_ptr = behavior->as_emitter();
+  auto subscription = emitter_ptr->subscribe(
+      [&subscription_call_cnt](bool const &value) { subscription_call_cnt++; });
+  EXPECT_EQ(1, subscription_call_cnt);
+  source_ptr->publish(true);
+  EXPECT_EQ(2, subscription_call_cnt);
+}
+
 TEST(behavior_concrete, ensure_subscription_is_called_at_subscribing) {
   int subscription_call_cnt = 0;
   auto behavior = BehaviorConcrete<bool>(true);
@@ -16,6 +28,7 @@ TEST(behavior_concrete, ensure_subscription_is_called_at_subscribing) {
   source_ptr->publish(true);
   EXPECT_EQ(2, subscription_call_cnt);
 }
+
 TEST(emitter_filter_operator, one_iteration_factory) {
   int tested_value = 0;
   auto publisher_unique_ptr = std::make_unique<PublisherConcrete<int>>();
