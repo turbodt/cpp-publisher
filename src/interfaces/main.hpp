@@ -1,6 +1,7 @@
 #ifndef H_CPP_PUBLISHER_MODULE_INTERFACES
 #define H_CPP_PUBLISHER_MODULE_INTERFACES
 
+#include "./behavior.hpp"
 #include "./emitter.hpp"
 #include "./operators/main.hpp"
 #include "./publisher.hpp"
