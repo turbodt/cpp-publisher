@@ -11,7 +11,7 @@ template <typename T> class EmitterConcrete;
 template <typename T>
 class SubscriptionConcrete
     : virtual public Subscription<T>,
-      utils::InstanceCounter<SubscriptionConcrete<void>> {
+      public utils::InstanceCounter<SubscriptionConcrete<void>> {
   friend class EmitterConcrete<T>;
 
 public:

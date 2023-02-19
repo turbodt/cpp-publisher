@@ -18,9 +18,9 @@ public:
   typedef typename EmitterConcrete<T>::OnDestroyCb OnDestroyCb;
 
   virtual void publish(T const &);
-  virtual Subscription<T> *
-  subscribe(typename Subscription<T>::OnPublishCb const & = nullptr,
-            typename Subscription<T>::OnUnsubscribeCb const & = nullptr);
+  virtual SubscriptionConcrete<T> *subscribe(
+      typename Subscription<T>::OnPublishCb const & = nullptr,
+      typename Subscription<T>::OnUnsubscribeCb const & = nullptr) override;
 
   virtual Emitter<T> *as_emitter();
   virtual Source<T> *as_source();
@@ -35,7 +35,7 @@ template <typename T> void PublisherConcrete<T>::publish(T const &value) {
 }
 
 template <typename T>
-Subscription<T> *PublisherConcrete<T>::subscribe(
+SubscriptionConcrete<T> *PublisherConcrete<T>::subscribe(
     typename Subscription<T>::OnPublishCb const &on_publish,
     typename Subscription<T>::OnUnsubscribeCb const &on_unsubscribe) {
   return this->EmitterConcrete<T>::subscribe(on_publish, on_unsubscribe);

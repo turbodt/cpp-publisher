@@ -26,7 +26,7 @@ public:
   BehaviorConcrete<T> &operator=(BehaviorConcrete<T> &&);
 
   virtual void publish(T const &);
-  virtual Subscription<T> *
+  virtual SubscriptionConcrete<T> *
   subscribe(typename Subscription<T>::OnPublishCb const & = nullptr,
             typename Subscription<T>::OnUnsubscribeCb const & = nullptr);
 
@@ -64,7 +64,7 @@ template <typename T> void BehaviorConcrete<T>::publish(T const &value) {
 }
 
 template <typename T>
-Subscription<T> *BehaviorConcrete<T>::subscribe(
+SubscriptionConcrete<T> *BehaviorConcrete<T>::subscribe(
     typename Subscription<T>::OnPublishCb const &on_publish,
     typename Subscription<T>::OnUnsubscribeCb const &on_unsubscribe) {
   auto subscription =

@@ -40,7 +40,7 @@ public:
   EmitterConcrete<T> &operator=(EmitterConcrete<T> &&);
   virtual ~EmitterConcrete();
 
-  virtual Subscription<T> *
+  virtual SubscriptionConcrete<T> *
   subscribe(typename Subscription<T>::OnPublishCb const & = nullptr,
             typename Subscription<T>::OnUnsubscribeCb const & = nullptr);
 };
@@ -81,7 +81,7 @@ template <typename T> EmitterConcrete<T>::~EmitterConcrete() {
 };
 
 template <typename T>
-Subscription<T> *EmitterConcrete<T>::subscribe(
+SubscriptionConcrete<T> *EmitterConcrete<T>::subscribe(
     typename Subscription<T>::OnPublishCb const &on_publish,
     typename Subscription<T>::OnUnsubscribeCb const &on_unsubscribe) {
   auto subscription_up = std::make_unique<SubscriptionConcrete<T>>(

@@ -4,6 +4,7 @@
 #include "../../interfaces/main.hpp"
 #include "../publisher-factory.hpp"
 #include "../publisher.hpp"
+#include "./map-emitter.hpp"
 #include <functional>
 #include <memory>
 
@@ -15,13 +16,6 @@ class MapEmitterOperator : public EmitterOperator<From, To> {
 public:
   typedef typename EmitterOperator<From, To>::ReturnType ReturnType;
   typedef typename std::function<To(MapArg)> MappingType;
-
-private:
-  void make_subsrciption(Emitter<From> *,
-                         std::unique_ptr<Publisher<To>> &) const;
-  std::unique_ptr<Publisher<To>> make_to_unique_ptr(Emitter<From> *) const;
-  std::unique_ptr<Publisher<To>>
-  make_to_unique_ptr(std::unique_ptr<Emitter<From>> &) const;
 
 protected:
   MappingType mapping;
@@ -44,46 +38,18 @@ MapEmitterOperator<From, To, MapArg>::MapEmitterOperator(
     : mapping(mapping){};
 
 template <typename From, typename To, typename MapArg>
-void MapEmitterOperator<From, To, MapArg>::make_subsrciption(
-    Emitter<From> *from_ptr,
-    std::unique_ptr<Publisher<To>> &to_unique_ptr) const {
-  auto to_ptr = to_unique_ptr.get();
-  from_ptr->subscribe(
-      [this, to_ptr](auto value) { to_ptr->publish(this->mapping(value)); });
-}
-
-template <typename From, typename To, typename MapArg>
-std::unique_ptr<Publisher<To>>
-MapEmitterOperator<From, To, MapArg>::make_to_unique_ptr(
-    Emitter<From> *from_ptr) const {
-  return make_publisher<To>();
-}
-
-template <typename From, typename To, typename MapArg>
-std::unique_ptr<Publisher<To>>
-MapEmitterOperator<From, To, MapArg>::make_to_unique_ptr(
-    std::unique_ptr<Emitter<From>> &from_unique_ptr) const {
-  auto from_ptr = from_unique_ptr.release();
-  auto on_delete = [from_ptr](auto emitter_ptr) { delete from_ptr; };
-  return make_publisher<To>(nullptr, on_delete);
-}
-
-template <typename From, typename To, typename MapArg>
 typename MapEmitterOperator<From, To, MapArg>::ReturnType
 MapEmitterOperator<From, To, MapArg>::operate(Emitter<From> *from_ptr) {
-  auto to_unique_ptr = this->make_to_unique_ptr(from_ptr);
-  this->make_subsrciption(from_ptr, to_unique_ptr);
-  return to_unique_ptr;
+  return std::make_unique<MapEmitter<From, To, MapArg>>(from_ptr,
+                                                        this->mapping);
 };
 
 template <typename From, typename To, typename MapArg>
 typename MapEmitterOperator<From, To, MapArg>::ReturnType
 MapEmitterOperator<From, To, MapArg>::operate(
-    std::unique_ptr<Emitter<From>> &from_unique_ptr) {
-  auto from_ptr = from_unique_ptr.get();
-  auto to_unique_ptr = this->make_to_unique_ptr(from_unique_ptr);
-  this->make_subsrciption(from_ptr, to_unique_ptr);
-  return to_unique_ptr;
+    std::unique_ptr<Emitter<From>> &from_uptr) {
+  return std::make_unique<MapEmitter<From, To, MapArg>>(from_uptr,
+                                                        this->mapping);
 };
 
 } // namespace operators
