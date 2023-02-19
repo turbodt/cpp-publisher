@@ -5,6 +5,73 @@
 
 using namespace cpp_publisher;
 
+TEST(filter_operator, with_behavior_subject_two_subscribers) {
+  int subscription_call_cnt_1 = 0;
+  int subscription_call_cnt_2 = 0;
+  auto behavior = make_behavior<bool>(true);
+  auto source_ptr = behavior->as_source();
+  auto emitter_uptr =
+      operators::filter<bool>([](auto b) { return b; })(behavior->as_emitter());
+  auto subscription1 =
+      emitter_uptr->subscribe([&subscription_call_cnt_1](bool const &value) {
+        subscription_call_cnt_1++;
+      });
+  EXPECT_EQ(1, subscription_call_cnt_1);
+  EXPECT_EQ(0, subscription_call_cnt_2);
+  source_ptr->publish(true);
+  EXPECT_EQ(2, subscription_call_cnt_1);
+  EXPECT_EQ(0, subscription_call_cnt_2);
+  auto subscription2 =
+      emitter_uptr->subscribe([&subscription_call_cnt_2](bool const &value) {
+        subscription_call_cnt_2++;
+      });
+  EXPECT_EQ(2, subscription_call_cnt_1);
+  EXPECT_EQ(1, subscription_call_cnt_2);
+  source_ptr->publish(true);
+  EXPECT_EQ(3, subscription_call_cnt_1);
+  EXPECT_EQ(2, subscription_call_cnt_2);
+}
+
+TEST(map_operator, with_behavior_subject_002) {
+  int subscription_call_cnt_1 = 0;
+  int subscription_call_cnt_2 = 0;
+  auto behavior = make_behavior<bool>(true);
+  auto source_ptr = behavior->as_source();
+  auto emitter_uptr = operators::map<bool, bool>([](auto b) { return b; })(
+      behavior->as_emitter());
+  auto subscription1 =
+      emitter_uptr->subscribe([&subscription_call_cnt_1](bool const &value) {
+        subscription_call_cnt_1++;
+      });
+  EXPECT_EQ(1, subscription_call_cnt_1);
+  EXPECT_EQ(0, subscription_call_cnt_2);
+  source_ptr->publish(true);
+  EXPECT_EQ(2, subscription_call_cnt_1);
+  EXPECT_EQ(0, subscription_call_cnt_2);
+  auto subscription2 =
+      emitter_uptr->subscribe([&subscription_call_cnt_2](bool const &value) {
+        subscription_call_cnt_2++;
+      });
+  EXPECT_EQ(2, subscription_call_cnt_1);
+  EXPECT_EQ(1, subscription_call_cnt_2);
+  source_ptr->publish(true);
+  EXPECT_EQ(3, subscription_call_cnt_1);
+  EXPECT_EQ(2, subscription_call_cnt_2);
+}
+
+TEST(map_operator, with_behavior_subject) {
+  int subscription_call_cnt = 0;
+  auto behavior = make_behavior<bool>(true);
+  auto source_ptr = behavior->as_source();
+  auto emitter_uptr = operators::map<bool, bool>([](auto b) { return b; })(
+      behavior->as_emitter());
+  auto subscription = emitter_uptr->subscribe(
+      [&subscription_call_cnt](bool const &value) { subscription_call_cnt++; });
+  EXPECT_EQ(1, subscription_call_cnt);
+  source_ptr->publish(true);
+  EXPECT_EQ(2, subscription_call_cnt);
+}
+
 TEST(behavior_factory, ensure_subscription_is_called_at_subscribing) {
   int subscription_call_cnt = 0;
   auto behavior = make_behavior<bool>(true);
@@ -15,6 +82,32 @@ TEST(behavior_factory, ensure_subscription_is_called_at_subscribing) {
   EXPECT_EQ(1, subscription_call_cnt);
   source_ptr->publish(true);
   EXPECT_EQ(2, subscription_call_cnt);
+}
+
+TEST(behavior_concrete, two_subscriptions) {
+  int subscription_call_cnt_1 = 0;
+  int subscription_call_cnt_2 = 0;
+  auto behavior = make_behavior<bool>(true);
+  auto source_ptr = behavior->as_source();
+  auto emitter_uptr = behavior->as_emitter();
+  auto subscription1 =
+      emitter_uptr->subscribe([&subscription_call_cnt_1](bool const &value) {
+        subscription_call_cnt_1++;
+      });
+  EXPECT_EQ(1, subscription_call_cnt_1);
+  EXPECT_EQ(0, subscription_call_cnt_2);
+  source_ptr->publish(true);
+  EXPECT_EQ(2, subscription_call_cnt_1);
+  EXPECT_EQ(0, subscription_call_cnt_2);
+  auto subscription2 =
+      emitter_uptr->subscribe([&subscription_call_cnt_2](bool const &value) {
+        subscription_call_cnt_2++;
+      });
+  EXPECT_EQ(2, subscription_call_cnt_1);
+  EXPECT_EQ(1, subscription_call_cnt_2);
+  source_ptr->publish(true);
+  EXPECT_EQ(3, subscription_call_cnt_1);
+  EXPECT_EQ(2, subscription_call_cnt_2);
 }
 
 TEST(behavior_concrete, ensure_subscription_is_called_at_subscribing) {
